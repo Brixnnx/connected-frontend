@@ -1,0 +1,87 @@
+<div class="page-layout">
+  <app-header></app-header>
+  <app-sidebar></app-sidebar>
+
+  <main class="page-main">
+    <div class="page-container">
+      <div class="page-header card">
+        <h1 class="page-title">Gamificación</h1>
+        <p class="page-subtitle">Sigue tu progreso y desbloquea logros</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card card">
+          <div class="stat-icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <path d="M16 2l3.09 6.26L26 9.27l-5 4.87 1.18 6.88L16 17.77l-6.18 3.25L11 14.14 6 9.27l6.91-1.01L16 2z" fill="#FFD700"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ puntosTotal }}</div>
+            <div class="stat-label">Puntos Totales</div>
+          </div>
+        </div>
+
+        <div class="stat-card card">
+          <div class="stat-icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <circle cx="16" cy="16" r="14" stroke="#2D6CDF" stroke-width="2"/>
+              <path d="M16 8v8l4 4" stroke="#2D6CDF" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">Nivel {{ nivel }}</div>
+            <div class="stat-label">Nivel Actual</div>
+          </div>
+        </div>
+
+        <div class="stat-card card">
+          <div class="stat-icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <path d="M4 16h24M16 4v24" stroke="#00C896" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ 100 - progreso }}</div>
+            <div class="stat-label">Puntos para Subir</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="progress-card card">
+        <h3 class="card-title">Progreso al Siguiente Nivel</h3>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="progreso"></div>
+        </div>
+        <p class="progress-text">{{ progreso }}% completado</p>
+      </div>
+
+      <div class="history-card card">
+        <h3 class="card-title">Historial de Puntos</h3>
+        <div class="history-list">
+          <div class="history-item" *ngFor="let punt of puntuaciones">
+            <div class="history-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" fill="#F0F7FF"/>
+                <path d="M12 2l2.5 5 5.5.8-4 3.9.9 5.3-4.9-2.6-4.9 2.6.9-5.3-4-3.9 5.5-.8L12 2z" fill="#2D6CDF"/>
+              </svg>
+            </div>
+            <div class="history-info">
+              <div class="history-description">{{ punt.descripcion }}</div>
+              <div class="history-date">{{ formatDate(punt.fechaObtencion) }}</div>
+            </div>
+            <div class="history-points">+{{ punt.puntos }}</div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="puntuaciones.length === 0">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+            <circle cx="32" cy="32" r="30" stroke="#E5E7EB" stroke-width="2"/>
+            <path d="M32 20l4 8 8 1-6 6 1 8-7-4-7 4 1-8-6-6 8-1 4-8z" stroke="#9CA3AF" stroke-width="2"/>
+          </svg>
+          <p>Aún no has ganado puntos</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

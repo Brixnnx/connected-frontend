@@ -1,0 +1,121 @@
+<div class="page-layout">
+  <app-header></app-header>
+  <app-sidebar></app-sidebar>
+
+  <main class="page-main">
+    <div class="page-container">
+      <mat-card class="page-header">
+        <mat-card-content class="page-header-content">
+          <div>
+            <h1 class="page-title">Oportunidades</h1>
+            <p class="page-subtitle">Descubre empleos, pasantías, talleres y eventos</p>
+          </div>
+          <a mat-raised-button color="primary" routerLink="/opportunities-create">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2"/>
+              <path d="M10 6v8M6 10h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Crear Oportunidad
+          </a>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="tabs-card">
+        <mat-tab-group (selectedTabChange)="onTabChange($event.index)">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <rect x="3" y="5" width="14" height="12" rx="2" stroke="currentColor" stroke-width="2"/>
+                <path d="M7 5V3h6v2" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Empleos
+            </ng-template>
+          </mat-tab>
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M10 6v4l3 3" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Pasantías
+            </ng-template>
+          </mat-tab>
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M3 18h14M7 18v-6M13 18v-8M10 18v-12" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Talleres
+            </ng-template>
+          </mat-tab>
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <rect x="3" y="4" width="14" height="12" rx="2" stroke="currentColor" stroke-width="2"/>
+                <path d="M3 8h14M7 2v4M13 2v4" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Eventos
+            </ng-template>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card>
+
+      <mat-card *ngIf="loading">
+        <mat-card-content class="loading-state">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Cargando oportunidades...</p>
+        </mat-card-content>
+      </mat-card>
+
+      <div class="opportunities-grid" *ngIf="!loading">
+        <mat-card class="opportunity-card" *ngFor="let opp of filteredOportunidades">
+          <mat-card-content>
+            <div class="opp-header">
+              <div class="opp-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <rect x="4" y="6" width="16" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+                  <path d="M8 6V4h8v2" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+              <span class="badge" [class.badge-success]="opp.tipo === 'EMPLEO'"
+                                 [class.badge-info]="opp.tipo === 'PASANTIA'"
+                                 [class.badge-warning]="opp.tipo === 'TALLER'"
+                                 [class.badge-primary]="opp.tipo === 'EVENTO'">
+                {{ opp.tipo }}
+              </span>
+            </div>
+
+            <h3 class="opp-title">{{ opp.titulo }}</h3>
+            <p class="opp-empresa">{{ opp.empresa }}</p>
+            <p class="opp-ubicacion">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 14s-5-4-5-8a5 5 0 0110 0c0 4-5 8-5 8z" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="8" cy="6" r="2" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              {{ opp.ubicacion }}
+            </p>
+
+            <p class="opp-description">{{ opp.descripcion }}</p>
+
+            <mat-divider></mat-divider>
+
+            <div class="opp-footer">
+              <span class="opp-date">Publicado: {{ formatDate(opp.fechaPublicacion) }}</span>
+              <button mat-raised-button color="primary">Ver Detalles</button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <mat-card class="empty-state" *ngIf="!loading && filteredOportunidades.length === 0">
+        <mat-card-content>
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+            <rect x="8" y="12" width="48" height="40" rx="4" stroke="#E5E7EB" stroke-width="2"/>
+            <path d="M20 12v8M44 12v8M8 24h48" stroke="#9CA3AF" stroke-width="2"/>
+          </svg>
+          <p>No hay oportunidades de este tipo disponibles</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </main>
+</div>

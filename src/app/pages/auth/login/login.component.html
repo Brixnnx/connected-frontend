@@ -1,0 +1,94 @@
+<div class="auth-container">
+  <mat-card class="auth-card">
+    <!-- Logo -->
+    <div class="auth-header">
+      <svg width="48" height="48" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 4L4 10V22L16 28L28 22V10L16 4Z" fill="#2D6CDF"/>
+        <circle cx="16" cy="12" r="3" fill="white"/>
+        <circle cx="10" cy="20" r="2" fill="white"/>
+        <circle cx="22" cy="20" r="2" fill="white"/>
+      </svg>
+      <h1>ConnectEd</h1>
+    </div>
+
+    <!-- Título -->
+    <mat-card-header>
+      <mat-card-title class="auth-title">Iniciar sesión</mat-card-title>
+      <mat-card-subtitle>Ingresa a tu cuenta para continuar</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Error Message -->
+      <div class="alert alert-error" *ngIf="error">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2"/>
+          <path d="M10 6v4M10 14h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        {{ error }}
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+        <!-- Email -->
+        <div class="form-group">
+          <label class="form-label">Email institucional</label>
+          <input
+            type="email"
+            class="form-input"
+            formControlName="email"
+            placeholder="ejemplo@universidad.edu"
+            autocomplete="email"
+            [class.error]="email?.invalid && email?.touched"
+          >
+          <span class="form-error" *ngIf="email?.errors?.['required'] && email?.touched">El email es requerido</span>
+          <span class="form-error" *ngIf="email?.errors?.['email'] && email?.touched">Ingresa un email válido</span>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <div class="input-with-suffix">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              class="form-input"
+              formControlName="password"
+              placeholder="••••••••"
+              autocomplete="current-password"
+              [class.error]="password?.invalid && password?.touched"
+            >
+            <span class="input-suffix" (click)="togglePasswordVisibility()">
+              {{ showPassword ? 'Ocultar' : 'Mostrar' }}
+            </span>
+          </div>
+          <span class="form-error" *ngIf="password?.errors?.['required'] && password?.touched">La contraseña es requerida</span>
+          <span class="form-error" *ngIf="password?.errors?.['minlength'] && password?.touched">Mínimo 8 caracteres</span>
+        </div>
+
+        <!-- Remember Me & Forgot Password -->
+        <div class="form-row">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="rememberMe">
+            <span>Recordarme</span>
+          </label>
+          <a href="#" class="link">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="btn btn-primary full-width"
+          [disabled]="loading"
+        >
+          <span *ngIf="!loading">Iniciar sesión</span>
+          <span class="spinner" *ngIf="loading"></span>
+        </button>
+      </form>
+
+      <!-- Register Link -->
+      <div class="auth-footer">
+        <span>¿No tienes una cuenta?</span>
+        <a routerLink="/register" class="link">Crear cuenta</a>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

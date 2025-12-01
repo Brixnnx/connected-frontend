@@ -1,0 +1,299 @@
+<div class="dashboard-layout">
+  <app-header></app-header>
+  <app-sidebar></app-sidebar>
+
+  <main class="dashboard-main">
+    <div class="dashboard-grid">
+      <!-- Left Column: Profile Card -->
+      <aside class="left-column">
+        <mat-card class="profile-card">
+          <mat-card-content>
+            <div class="profile-header">
+              <div class="profile-avatar">
+                <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                  <circle cx="40" cy="40" r="40" fill="#E5E7EB"/>
+                  <circle cx="40" cy="30" r="16" fill="#9CA3AF"/>
+                  <path d="M8 72c0-17.6 14.4-32 32-32s32 14.4 32 32" fill="#9CA3AF"/>
+                </svg>
+              </div>
+              <h3 class="profile-name">{{ currentUser?.primerNombre }} {{ currentUser?.primerApellido }}</h3>
+              <p class="profile-location">{{ currentUser?.ciudad }}, {{ currentUser?.pais }}</p>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="profile-stats">
+              <div class="stat-item">
+                <div class="stat-value">{{ puntos }}</div>
+                <div class="stat-label">Puntos</div>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat-item">
+                <div class="stat-value">Nivel {{ nivel }}</div>
+                <div class="stat-label">Tu Nivel</div>
+              </div>
+            </div>
+
+            <button mat-stroked-button color="primary" routerLink="/profile" style="width: 100%">
+              Ver Perfil Completo
+            </button>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Quick Links -->
+        <mat-card class="quick-links">
+          <mat-card-header>
+            <mat-card-title>Accesos Rápidos</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <ul class="link-list">
+              <li>
+                <a routerLink="/my-network">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <circle cx="7" cy="6" r="3" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="13" cy="14" r="3" stroke="currentColor" stroke-width="2"/>
+                    <path d="M9 8l2 4" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  Mi Red
+                </a>
+              </li>
+              <li>
+                <a routerLink="/opportunities">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <rect x="3" y="4" width="14" height="12" rx="2" stroke="currentColor" stroke-width="2"/>
+                    <path d="M7 2v4M13 2v4M3 8h14" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  Oportunidades
+                </a>
+              </li>
+              <li>
+                <a routerLink="/mentorias">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <circle cx="10" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+                    <path d="M3 18c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  Mentorías
+                </a>
+              </li>
+              <li>
+                <a routerLink="/gamification">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M10 2l2.5 5 5.5.8-4 3.9.9 5.3-4.9-2.6-4.9 2.6.9-5.3-4-3.9 5.5-.8L10 2z" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  Gamificación
+                </a>
+              </li>
+            </ul>
+          </mat-card-content>
+        </mat-card>
+      </aside>
+
+      <!-- Center Column: Feed -->
+      <div class="center-column">
+        <!-- Create Publication -->
+        <mat-card class="create-publication">
+          <mat-card-content>
+            <div class="create-header">
+              <div class="user-avatar-small">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                  <circle cx="24" cy="24" r="24" fill="#E5E7EB"/>
+                  <circle cx="24" cy="18" r="8" fill="#9CA3AF"/>
+                  <path d="M8 40c0-8.8 7.2-16 16-16s16 7.2 16 16" fill="#9CA3AF"/>
+                </svg>
+              </div>
+              <button
+                mat-stroked-button
+                class="create-input"
+                (click)="showPublicacionInput = true"
+                *ngIf="!showPublicacionInput"
+              >
+                ¿Qué quieres compartir?
+              </button>
+            </div>
+
+            <form [formGroup]="publicacionForm" (ngSubmit)="crearPublicacion()" *ngIf="showPublicacionInput">
+              <mat-form-field appearance="outline" style="width: 100%">
+                <mat-label>¿Qué quieres compartir?</mat-label>
+                <textarea
+                  matInput
+                  formControlName="contenido"
+                  placeholder="Escribe algo..."
+                  rows="4"
+                ></textarea>
+              </mat-form-field>
+              <div class="create-actions">
+                <button mat-stroked-button type="button" (click)="showPublicacionInput = false">
+                  Cancelar
+                </button>
+                <button mat-raised-button color="primary" type="submit" [disabled]="publicacionForm.invalid">
+                  Publicar
+                </button>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Feed Loading -->
+        <div class="feed-loading" *ngIf="loading">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Cargando feed...</p>
+        </div>
+
+        <!-- Publications -->
+        <mat-card class="publication-card" *ngFor="let pub of publicaciones">
+          <mat-card-content>
+            <div class="pub-header">
+              <div class="pub-author">
+                <div class="user-avatar-small">
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                    <circle cx="24" cy="24" r="24" fill="#E5E7EB"/>
+                    <circle cx="24" cy="18" r="8" fill="#9CA3AF"/>
+                    <path d="M8 40c0-8.8 7.2-16 16-16s16 7.2 16 16" fill="#9CA3AF"/>
+                  </svg>
+                </div>
+                <div class="pub-author-info">
+                  <div class="pub-author-name">
+                    {{ pub.autor.primerNombre }} {{ pub.autor.primerApellido }}
+                  </div>
+                  <div class="pub-date">{{ formatDate(pub.fechaPublicacion) }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pub-content">
+              <p>{{ pub.contenido }}</p>
+              <img *ngIf="pub.imagen" [src]="pub.imagen" alt="Publication image" class="pub-image">
+            </div>
+
+            <div class="pub-stats">
+              <span *ngIf="pub.reacciones && pub.reacciones.length > 0">
+                {{ pub.reacciones.length }} reacciones
+              </span>
+              <span *ngIf="pub.comentarios && pub.comentarios.length > 0">
+                {{ pub.comentarios.length }} comentarios
+              </span>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="pub-actions">
+              <button
+                mat-button
+                [class.active]="hasUserReacted(pub, 'LIKE')"
+                (click)="agregarReaccion(pub.idPublicacion!, 'LIKE')"
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M10 18l-1.45-1.32C3.4 12.36 0 9.28 0 5.5 0 2.42 2.42 0 5.5 0c1.74 0 3.41.81 4.5 2.09C11.09.81 12.76 0 14.5 0 17.58 0 20 2.42 20 5.5c0 3.78-3.4 6.86-8.55 11.18L10 18z" [attr.fill]="hasUserReacted(pub, 'LIKE') ? '#FF6B35' : 'none'" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+                Me gusta
+                <span *ngIf="getReactionCount(pub, 'LIKE') > 0" class="count">
+                  ({{ getReactionCount(pub, 'LIKE') }})
+                </span>
+              </button>
+              <button mat-button>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M18 2H2v12h4v4l4-4h8V2z" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Comentar
+                <span *ngIf="pub.comentarios && pub.comentarios.length > 0" class="count">
+                  ({{ pub.comentarios.length }})
+                </span>
+              </button>
+              <button mat-button>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M15 10l5-5m0 0l-5-5m5 5H8a6 6 0 00-6 6v4" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Compartir
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="empty-state" *ngIf="!loading && publicaciones.length === 0">
+          <mat-card-content>
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+              <circle cx="32" cy="32" r="30" stroke="#E5E7EB" stroke-width="2"/>
+              <path d="M32 20v24M20 32h24" stroke="#9CA3AF" stroke-width="2"/>
+            </svg>
+            <p>No hay publicaciones aún</p>
+            <button mat-raised-button color="primary" (click)="showPublicacionInput = true">
+              Crear la primera publicación
+            </button>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Right Column: Suggestions -->
+      <aside class="right-column">
+        <mat-card class="suggestions-card">
+          <mat-card-header>
+            <mat-card-title>Personas que podrías conocer</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="suggestion-item" *ngFor="let usuario of sugerencias">
+              <div class="user-avatar-small">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                  <circle cx="24" cy="24" r="24" fill="#E5E7EB"/>
+                  <circle cx="24" cy="18" r="8" fill="#9CA3AF"/>
+                  <path d="M8 40c0-8.8 7.2-16 16-16s16 7.2 16 16" fill="#9CA3AF"/>
+                </svg>
+              </div>
+              <div class="suggestion-info">
+                <div class="suggestion-name">
+                  {{ usuario.primerNombre }} {{ usuario.primerApellido }}
+                </div>
+                <div class="suggestion-location">
+                  {{ usuario.ciudad }}, {{ usuario.pais }}
+                </div>
+                <button
+                  mat-raised-button
+                  color="primary"
+                  (click)="enviarSolicitud(usuario.idUsuario!)"
+                >
+                  Conectar
+                </button>
+              </div>
+            </div>
+
+            <div class="empty-state-small" *ngIf="sugerencias.length === 0">
+              <p>No hay sugerencias disponibles</p>
+            </div>
+
+            <a mat-button color="primary" routerLink="/my-network">Ver todas las sugerencias</a>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Trending Topics -->
+        <mat-card class="trending-card">
+          <mat-card-header>
+            <mat-card-title>Temas del momento</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <ul class="trending-list">
+              <li>
+                <div class="trending-topic">#DesarrolloWeb</div>
+                <div class="trending-count">234 publicaciones</div>
+              </li>
+              <li>
+                <div class="trending-topic">#Pasantías2025</div>
+                <div class="trending-count">189 publicaciones</div>
+              </li>
+              <li>
+                <div class="trending-topic">#InteligenciaArtificial</div>
+                <div class="trending-count">156 publicaciones</div>
+              </li>
+              <li>
+                <div class="trending-topic">#EmpleosTech</div>
+                <div class="trending-count">142 publicaciones</div>
+              </li>
+              <li>
+                <div class="trending-topic">#Networking</div>
+                <div class="trending-count">98 publicaciones</div>
+              </li>
+            </ul>
+          </mat-card-content>
+        </mat-card>
+      </aside>
+    </div>
+  </main>
+</div>

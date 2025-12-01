@@ -1,0 +1,199 @@
+<div class="page-layout">
+  <app-header></app-header>
+  <app-sidebar></app-sidebar>
+
+  <main class="page-main">
+    <div class="page-container">
+      <mat-card class="page-header">
+        <mat-card-content class="page-header-content">
+          <div>
+            <h1 class="page-title">Mentorías</h1>
+            <p class="page-subtitle">Conecta con mentores expertos en tu área</p>
+          </div>
+          <a mat-raised-button color="primary" routerLink="/mentorias-create">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2"/>
+              <path d="M10 6v8M6 10h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Ser Mentor
+          </a>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Tabs -->
+      <mat-card class="tabs-card">
+        <mat-tab-group (selectedTabChange)="activeTab = $event.index === 0 ? 'mentores' : 'sesiones'">
+          <mat-tab label="Mentores Disponibles"></mat-tab>
+          <mat-tab label="Mis Sesiones"></mat-tab>
+        </mat-tab-group>
+      </mat-card>
+
+      <!-- Tab: Mentores Disponibles -->
+      <div *ngIf="activeTab === 'mentores'" class="mentores-grid">
+        <mat-card class="mentor-card" *ngFor="let mentor of mentores">
+          <mat-card-content>
+            <div class="mentor-header">
+              <div class="mentor-avatar">
+                <img
+                  *ngIf="mentor.usuario?.fotoPerfil"
+                  [src]="mentor.usuario.fotoPerfil"
+                  [alt]="mentor.usuario.primerNombre + ' ' + mentor.usuario.primerApellido"
+                  [title]="mentor.usuario.primerNombre + ' ' + mentor.usuario.primerApellido">
+                <svg *ngIf="!mentor.usuario?.fotoPerfil" width="80" height="80" viewBox="0 0 80 80" fill="none">
+                  <circle cx="40" cy="40" r="40" fill="#E5E7EB"/>
+                  <circle cx="40" cy="30" r="16" fill="#9CA3AF"/>
+                  <path d="M8 72c0-17.6 14.4-32 32-32s32 14.4 32 32" fill="#9CA3AF"/>
+                </svg>
+              </div>
+              <span class="badge badge-success" *ngIf="mentor.disponible">Disponible</span>
+              <span class="badge badge-secondary" *ngIf="!mentor.disponible">No disponible</span>
+            </div>
+
+            <h3 class="mentor-name">{{ mentor.usuario?.primerNombre }} {{ mentor.usuario?.primerApellido }}</h3>
+            <p class="mentor-especialidad">{{ mentor.areasExperiencia }}</p>
+
+            <div class="mentor-stats">
+              <div class="stat-item" *ngIf="mentor.rating">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 1l2 4 4.5.6-3.2 3.1.8 4.3-4.1-2.2-4.1 2.2.8-4.3L1 5.6 5.5 5 8 1z" fill="#FFD700"/>
+                </svg>
+                <span>{{ mentor.rating }}</span>
+              </div>
+              <div class="stat-item">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M8 4v4l3 3" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+                <span>{{ mentor.anosExperiencia }} años</span>
+              </div>
+              <div class="stat-item">
+                <span>S/ {{ mentor.tarifaHora }}/hora</span>
+              </div>
+            </div>
+
+            <div class="mentor-actions">
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="abrirModalSolicitud(mentor)"
+                [disabled]="!mentor.disponible">
+                Solicitar Mentoría
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card *ngIf="mentores.length === 0" class="empty-state">
+          <mat-card-content>
+            <p>No hay mentores disponibles en este momento.</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Tab: Mis Sesiones -->
+      <div *ngIf="activeTab === 'sesiones'" class="sesiones-list">
+        <mat-card class="sesion-card" *ngFor="let sesion of misSesiones">
+          <mat-card-content>
+            <div class="sesion-header">
+              <div class="mentor-info">
+                <img
+                  *ngIf="sesion.mentor?.usuario?.fotoPerfil"
+                  [src]="sesion.mentor.usuario.fotoPerfil"
+                  [alt]="sesion.mentor.usuario.primerNombre + ' ' + sesion.mentor.usuario.primerApellido"
+                  [title]="sesion.mentor.usuario.primerNombre + ' ' + sesion.mentor.usuario.primerApellido"
+                  class="mentor-avatar-small">
+                <div>
+                  <h4>{{ sesion.mentor?.usuario?.primerNombre }} {{ sesion.mentor?.usuario?.primerApellido }}</h4>
+                  <p class="text-muted">{{ sesion.mentor?.areasExperiencia }}</p>
+                </div>
+              </div>
+              <span class="badge" [ngClass]="getEstadoClass(sesion.estado)">
+                {{ sesion.estado }}
+              </span>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="sesion-details">
+              <p><strong>Tema:</strong> {{ sesion.tema }}</p>
+              <p><strong>Fecha inicio:</strong> {{ sesion.fechaInicio | date:'dd/MM/yyyy HH:mm' }}</p>
+              <p><strong>Fecha fin:</strong> {{ sesion.fechaFin | date:'dd/MM/yyyy HH:mm' }}</p>
+              <p *ngIf="sesion.notas"><strong>Notas:</strong> {{ sesion.notas }}</p>
+            </div>
+
+            <div class="sesion-actions" *ngIf="sesion.estado === 'AGENDADA'">
+              <button mat-stroked-button color="warn" (click)="cancelarSesion(sesion)">
+                Cancelar Sesión
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card *ngIf="misSesiones.length === 0" class="empty-state">
+          <mat-card-content>
+            <p>No tienes sesiones de mentoría programadas.</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal: Solicitar Mentoría -->
+  <div class="modal-overlay" *ngIf="showSolicitarModal" (click)="cerrarModalSolicitud()">
+    <mat-card class="modal" (click)="$event.stopPropagation()">
+      <mat-card-header>
+        <mat-card-title>Solicitar Mentoría</mat-card-title>
+        <button class="close-btn" (click)="cerrarModalSolicitud()">×</button>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="mentor-summary" *ngIf="selectedMentor">
+          <h4>{{ selectedMentor.usuario?.primerNombre }} {{ selectedMentor.usuario?.primerApellido }}</h4>
+          <p>{{ selectedMentor.areasExperiencia }}</p>
+          <p class="text-muted">Tarifa: S/ {{ selectedMentor.tarifaHora }}/hora</p>
+        </div>
+
+        <form (ngSubmit)="solicitarMentoria()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Fecha de inicio</mat-label>
+            <input
+              matInput
+              type="date"
+              [(ngModel)]="solicitudForm.fechaInicio"
+              name="fechaInicio"
+              required>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Canal de comunicación</mat-label>
+            <select matNativeControl [(ngModel)]="solicitudForm.canal" name="canal" required>
+              <option value="ZOOM">Zoom</option>
+              <option value="MEET">Google Meet</option>
+              <option value="TEAMS">Microsoft Teams</option>
+            </select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Notas de la sesión</mat-label>
+            <textarea
+              matInput
+              [(ngModel)]="solicitudForm.notas"
+              name="notas"
+              rows="3"
+              placeholder="Describe brevemente qué temas te gustaría discutir..."
+              required></textarea>
+          </mat-form-field>
+
+          <div class="modal-actions">
+            <button mat-stroked-button type="button" (click)="cerrarModalSolicitud()">
+              Cancelar
+            </button>
+            <button mat-raised-button color="primary" type="submit">
+              Solicitar Sesión
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

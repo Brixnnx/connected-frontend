@@ -1,0 +1,93 @@
+<div class="page-layout">
+  <app-header></app-header>
+  <app-sidebar></app-sidebar>
+
+  <main class="page-main">
+    <div class="page-container">
+      <!-- Header -->
+      <div class="page-header card">
+        <h1 class="page-title">Resultados de búsqueda</h1>
+        <p class="page-subtitle" *ngIf="searchQuery">
+          Mostrando resultados para: <strong>"{{ searchQuery }}"</strong>
+        </p>
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="isLoading" class="loading-state">
+        <p>Buscando...</p>
+      </div>
+
+      <!-- Results -->
+      <div *ngIf="!isLoading && hasSearched" class="results-container">
+        <div *ngIf="usuarios.length > 0" class="results-grid">
+          <div class="user-card card" *ngFor="let usuario of usuarios">
+            <div class="card-header">
+              <img
+                [src]="getAvatar(usuario)"
+                [alt]="getFullName(usuario)"
+                [title]="getFullName(usuario)"
+                class="user-avatar">
+            </div>
+
+            <div class="card-body">
+              <h3 class="user-name">
+                <a [routerLink]="['/profile', usuario.idUsuario]">
+                  {{ getFullName(usuario) }}
+                </a>
+              </h3>
+
+              <p class="user-location">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 8a2 2 0 100-4 2 2 0 000 4z" fill="currentColor"/>
+                  <path d="M8 14s-6-5.5-6-9a6 6 0 1112 0c0 3.5-6 9-6 9z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                </svg>
+                {{ getLocation(usuario) }}
+              </p>
+
+              <p class="user-description" *ngIf="usuario.descripcion">
+                {{ usuario.descripcion }}
+              </p>
+
+              <div class="user-actions">
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  (click)="enviarSolicitud(usuario.idUsuario!)">
+                  Conectar
+                </button>
+                <a
+                  [routerLink]="['/profile', usuario.idUsuario]"
+                  class="btn btn-outline btn-sm">
+                  Ver perfil
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- No results -->
+        <div *ngIf="usuarios.length === 0" class="empty-state">
+          <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+            <circle cx="60" cy="60" r="50" fill="#E5E7EB"/>
+            <path d="M45 70h30M45 50h30" stroke="#9CA3AF" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="45" cy="50" r="3" fill="#9CA3AF"/>
+            <circle cx="75" cy="50" r="3" fill="#9CA3AF"/>
+          </svg>
+          <h3>No se encontraron resultados</h3>
+          <p>Intenta con otros términos de búsqueda</p>
+        </div>
+      </div>
+
+      <!-- Initial state -->
+      <div *ngIf="!hasSearched && !isLoading" class="empty-state">
+        <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+          <circle cx="60" cy="60" r="50" fill="#E5E7EB"/>
+          <circle cx="55" cy="55" r="25" stroke="#9CA3AF" stroke-width="4" fill="none"/>
+          <path d="M75 75l15 15" stroke="#9CA3AF" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <h3>Busca personas en ConnectEd</h3>
+        <p>Usa la barra de búsqueda para encontrar estudiantes y profesionales</p>
+      </div>
+    </div>
+  </main>
+</div>

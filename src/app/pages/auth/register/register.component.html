@@ -1,0 +1,141 @@
+<div class="auth-container">
+  <mat-card class="auth-card">
+    <!-- Logo -->
+    <div class="auth-header">
+      <svg width="48" height="48" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 4L4 10V22L16 28L28 22V10L16 4Z" fill="#2D6CDF"/>
+        <circle cx="16" cy="12" r="3" fill="white"/>
+        <circle cx="10" cy="20" r="2" fill="white"/>
+        <circle cx="22" cy="20" r="2" fill="white"/>
+      </svg>
+      <h1>ConnectEd</h1>
+    </div>
+
+    <!-- Título -->
+    <mat-card-header>
+      <mat-card-title class="auth-title">Únete a ConnectEd</mat-card-title>
+      <mat-card-subtitle>Crea tu cuenta y empieza a construir tu red profesional</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Error Message -->
+      <div class="alert alert-error" *ngIf="error">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2"/>
+          <path d="M10 6v4M10 14h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        {{ error }}
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+        <!-- Nombres -->
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Primer nombre</label>
+            <input type="text" class="form-input" formControlName="primerNombre" placeholder="Juan">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Primer apellido</label>
+            <input type="text" class="form-input" formControlName="primerApellido" placeholder="Pérez">
+          </div>
+        </div>
+
+        <!-- Email y Password -->
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" formControlName="email" placeholder="ejemplo@universidad.edu" autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contraseña</label>
+            <div class="input-with-suffix">
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                class="form-input"
+                formControlName="password"
+                placeholder="••••••••"
+                autocomplete="new-password"
+              >
+              <span class="input-suffix" (click)="togglePasswordVisibility()">
+                {{ showPassword ? 'Ocultar' : 'Mostrar' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Password Requirements -->
+        <ul class="password-requirements">
+          <li [class.met]="passwordRequirements.minLength">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="7" [attr.stroke]="passwordRequirements.minLength ? 'var(--color-success)' : 'var(--color-gray-300)'" stroke-width="2"/>
+              <path *ngIf="passwordRequirements.minLength" d="M5 8l2 2 4-4" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Mínimo 8 caracteres
+          </li>
+          <li [class.met]="passwordRequirements.hasUppercase">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="7" [attr.stroke]="passwordRequirements.hasUppercase ? 'var(--color-success)' : 'var(--color-gray-300)'" stroke-width="2"/>
+              <path *ngIf="passwordRequirements.hasUppercase" d="M5 8l2 2 4-4" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Una mayúscula
+          </li>
+          <li [class.met]="passwordRequirements.hasNumber">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="7" [attr.stroke]="passwordRequirements.hasNumber ? 'var(--color-success)' : 'var(--color-gray-300)'" stroke-width="2"/>
+              <path *ngIf="passwordRequirements.hasNumber" d="M5 8l2 2 4-4" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Un número
+          </li>
+          <li [class.met]="passwordRequirements.hasSpecialChar">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="7" [attr.stroke]="passwordRequirements.hasSpecialChar ? 'var(--color-success)' : 'var(--color-gray-300)'" stroke-width="2"/>
+              <path *ngIf="passwordRequirements.hasSpecialChar" d="M5 8l2 2 4-4" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Un carácter especial
+          </li>
+        </ul>
+
+        <!-- País y Ciudad -->
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">País</label>
+            <select class="form-input form-select" formControlName="pais">
+              <option value="Peru">Perú</option>
+              <option value="Argentina">Argentina</option>
+              <option value="Chile">Chile</option>
+              <option value="Colombia">Colombia</option>
+              <option value="Mexico">México</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ciudad</label>
+            <input type="text" class="form-input" formControlName="ciudad" placeholder="Lima">
+          </div>
+        </div>
+
+        <!-- Fecha de Nacimiento -->
+        <div class="form-group">
+          <label class="form-label">Fecha de nacimiento</label>
+          <input type="date" class="form-input" formControlName="fechaNacimiento">
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="btn btn-primary full-width"
+          [disabled]="loading || !allRequirementsMet"
+        >
+          <span *ngIf="!loading">Crear cuenta</span>
+          <span class="spinner" *ngIf="loading"></span>
+        </button>
+      </form>
+
+      <!-- Login Link -->
+      <div class="auth-footer">
+        <span>¿Ya tienes cuenta?</span>
+        <a routerLink="/login" class="link">Inicia sesión</a>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

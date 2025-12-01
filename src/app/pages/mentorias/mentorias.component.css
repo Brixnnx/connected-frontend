@@ -1,0 +1,137 @@
+.page-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--color-gray-50);
+}
+
+.page-main {
+  margin-left: 280px;
+  margin-top: 70px;
+  padding: var(--spacing-6);
+}
+
+.page-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.page-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+  margin-bottom: var(--spacing-2);
+}
+
+.page-subtitle {
+  color: var(--color-gray-600);
+  font-size: 1.125rem;
+}
+
+.mentores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--spacing-4);
+}
+
+.mentor-card {
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.mentor-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.mentor-header {
+  position: relative;
+  margin-bottom: var(--spacing-4);
+}
+
+.mentor-header .mentor-avatar {
+  margin: 0 auto;
+}
+
+.mentor-header .badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.mentor-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-gray-900);
+  margin-bottom: var(--spacing-1);
+}
+
+.mentor-especialidad {
+  color: var(--color-gray-600);
+  font-size: 0.875rem;
+  margin-bottom: var(--spacing-4);
+}
+
+.mentor-stats {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4) 0;
+  margin-bottom: var(--spacing-4);
+  border-top: 1px solid var(--color-gray-200);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.mentor-stats .stat-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  font-size: 0.75rem;
+  color: var(--color-gray-600);
+}
+
+.mentor-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.mentor-actions .btn {
+  width: 100%;
+}
+
+@media (max-width: 1200px) {
+  .page-main {
+    margin-left: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-main {
+    margin-left: 0;
+    padding: var(--spacing-4);
+  }
+
+  .mentores-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .page-header-content .btn {
+    width: 100%;
+  }
+}

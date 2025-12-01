@@ -1,0 +1,212 @@
+<div class="page-layout">
+  <app-header></app-header>
+  <app-sidebar></app-sidebar>
+
+  <main class="page-main">
+    <div class="profile-container">
+      <!-- Profile Header Card -->
+      <mat-card class="profile-header-card">
+        <div class="profile-cover"></div>
+        <mat-card-content class="profile-main">
+          <div class="profile-avatar-large">
+            <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+              <circle cx="60" cy="60" r="60" fill="#E5E7EB"/>
+              <circle cx="60" cy="45" r="24" fill="#9CA3AF"/>
+              <path d="M12 108c0-26.4 21.6-48 48-48s48 21.6 48 48" fill="#9CA3AF"/>
+            </svg>
+          </div>
+          <div class="profile-info">
+            <h1 class="profile-name">{{ currentUser?.primerNombre }} {{ currentUser?.primerApellido }}</h1>
+            <p class="profile-location">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 14s-5-4-5-8a5 5 0 0110 0c0 4-5 8-5 8z" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="8" cy="6" r="2" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              {{ currentUser?.ciudad }}, {{ currentUser?.pais }}
+            </p>
+            <p class="profile-description" *ngIf="currentUser?.descripcion">
+              {{ currentUser.descripcion }}
+            </p>
+          </div>
+          <button mat-raised-button color="primary" (click)="openEditModal()">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M14 2l4 4L6 18H2v-4L14 2z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Editar Perfil
+          </button>
+        </mat-card-content>
+
+        <!-- Stats -->
+        <div class="profile-stats">
+          <div class="stat-item">
+            <div class="stat-value">{{ publicaciones.length }}</div>
+            <div class="stat-label">Publicaciones</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <div class="stat-value">{{ puntos }}</div>
+            <div class="stat-label">Puntos</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <div class="stat-value">Nivel {{ nivel }}</div>
+            <div class="stat-label">Gamificación</div>
+          </div>
+        </div>
+      </mat-card>
+
+      <!-- Tabs -->
+      <mat-card class="tabs-card">
+        <mat-tab-group (selectedTabChange)="activeTab = $event.index === 0 ? 'actividad' : 'sobre'">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M3 3h14v14H3V3zM7 7h6M7 11h4" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Actividad
+            </ng-template>
+          </mat-tab>
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M10 10v4M10 6h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              Sobre mí
+            </ng-template>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card>
+
+      <!-- Content -->
+      <div class="profile-content">
+        <!-- Actividad Tab -->
+        <div *ngIf="activeTab === 'actividad'">
+          <mat-card class="publication-card" *ngFor="let pub of publicaciones">
+            <mat-card-content>
+              <div class="pub-header">
+                <div class="pub-date">{{ formatDate(pub.fechaPublicacion) }}</div>
+              </div>
+              <div class="pub-content">
+                <p>{{ pub.contenido }}</p>
+                <img *ngIf="pub.imagen" [src]="pub.imagen" alt="Publication" class="pub-image">
+              </div>
+              <div class="pub-stats">
+                <span *ngIf="pub.reacciones && pub.reacciones.length > 0">
+                  {{ pub.reacciones.length }} reacciones
+                </span>
+                <span *ngIf="pub.comentarios && pub.comentarios.length > 0">
+                  {{ pub.comentarios.length }} comentarios
+                </span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card class="empty-state" *ngIf="publicaciones.length === 0">
+            <mat-card-content>
+              <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                <rect x="8" y="12" width="48" height="40" rx="4" stroke="#E5E7EB" stroke-width="2"/>
+                <path d="M20 24h24M20 32h16M20 40h20" stroke="#9CA3AF" stroke-width="2"/>
+              </svg>
+              <p>No has publicado nada aún</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <!-- Sobre Tab -->
+        <div *ngIf="activeTab === 'sobre'">
+          <mat-card class="info-card">
+            <mat-card-header>
+              <mat-card-title>Información Personal</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="info-grid">
+                <div class="info-item">
+                  <div class="info-label">Nombre Completo</div>
+                  <div class="info-value">{{ currentUser?.primerNombre }} {{ currentUser?.primerApellido }}</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Email</div>
+                  <div class="info-value">{{ currentUser?.email }}</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Ubicación</div>
+                  <div class="info-value">{{ currentUser?.ciudad }}, {{ currentUser?.pais }}</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Fecha de Nacimiento</div>
+                  <div class="info-value">{{ currentUser?.fechaNacimiento | date:'dd/MM/yyyy' }}</div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card class="info-card" *ngIf="currentUser?.descripcion">
+            <mat-card-header>
+              <mat-card-title>Sobre mí</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p class="info-text">{{ currentUser.descripcion }}</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Edit Modal -->
+  <div class="modal-overlay" *ngIf="showEditModal" (click)="closeEditModal()">
+    <mat-card class="modal-content" (click)="$event.stopPropagation()">
+      <mat-card-header class="modal-header">
+        <mat-card-title>Editar Perfil</mat-card-title>
+        <button class="close-btn" (click)="closeEditModal()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form [formGroup]="editForm" (ngSubmit)="saveProfile()">
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Primer Nombre</mat-label>
+              <input matInput formControlName="primerNombre">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Primer Apellido</mat-label>
+              <input matInput formControlName="primerApellido">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>País</mat-label>
+              <mat-select formControlName="pais">
+                <mat-option value="Peru">Perú</mat-option>
+                <mat-option value="Argentina">Argentina</mat-option>
+                <mat-option value="Chile">Chile</mat-option>
+                <mat-option value="Colombia">Colombia</mat-option>
+                <mat-option value="Mexico">México</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Ciudad</mat-label>
+              <input matInput formControlName="ciudad">
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Descripción</mat-label>
+            <textarea matInput formControlName="descripcion" rows="4" placeholder="Cuéntanos sobre ti..."></textarea>
+          </mat-form-field>
+
+          <div class="modal-footer">
+            <button mat-stroked-button type="button" (click)="closeEditModal()">Cancelar</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="editForm.invalid">Guardar Cambios</button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

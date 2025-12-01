@@ -1,0 +1,162 @@
+<div class="page-layout">
+  <app-header></app-header>
+  <app-sidebar></app-sidebar>
+
+  <main class="page-main">
+    <div class="feed-container">
+      <!-- Crear Publicación -->
+      <mat-card class="create-post">
+        <mat-card-content>
+          <div class="create-post-header">
+            <img
+              [src]="getAuthorAvatar(currentUser!)"
+              [alt]="getAuthorName(currentUser!)"
+              [title]="getAuthorName(currentUser!)"
+              class="avatar">
+            <mat-form-field appearance="outline" class="post-input-field">
+              <mat-label>¿Qué estás pensando, {{ currentUser?.primerNombre }}?</mat-label>
+              <textarea
+                matInput
+                [(ngModel)]="newPostContent"
+                rows="3"></textarea>
+            </mat-form-field>
+          </div>
+          <div class="create-post-actions">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="crearPublicacion()"
+              [disabled]="!newPostContent.trim()">
+              Publicar
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Loading -->
+      <div *ngIf="isLoading" class="loading-state">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Cargando publicaciones...</p>
+      </div>
+
+      <!-- Feed de Publicaciones -->
+      <div *ngIf="!isLoading" class="feed-posts">
+        <mat-card *ngFor="let publicacion of feed" class="post">
+          <mat-card-content>
+            <!-- Post Header -->
+            <div class="post-header">
+              <img
+                [src]="getAuthorAvatar(publicacion.autor)"
+                [alt]="getAuthorName(publicacion.autor)"
+                [title]="getAuthorName(publicacion.autor)"
+                class="avatar">
+              <div class="post-author-info">
+                <h4>{{ getAuthorName(publicacion.autor) }}</h4>
+                <span class="post-time">{{ getTimeAgo(publicacion.fechaPublicacion) }}</span>
+              </div>
+            </div>
+
+            <!-- Post Content -->
+            <div class="post-content">
+              <p>{{ publicacion.contenido }}</p>
+              <img *ngIf="publicacion.imagen" [src]="publicacion.imagen" alt="Post image" class="post-image">
+            </div>
+
+            <!-- Post Stats -->
+            <div class="post-stats">
+              <span *ngIf="publicacion.reacciones && publicacion.reacciones.length > 0">
+                👍 {{ publicacion.reacciones.length }} Me gusta
+              </span>
+              <span *ngIf="publicacion.comentarios && publicacion.comentarios.length > 0">
+                {{ publicacion.comentarios.length }} comentarios
+              </span>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Post Actions -->
+            <div class="post-actions">
+              <button
+                mat-button
+                [class.active]="usuarioReacciono(publicacion)"
+                (click)="darReaccion(publicacion.idPublicacion!)">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M2 9.5C2 8.395 2.895 7.5 4 7.5h2c.552 0 1-.448 1-1v-2C7 3.119 8.119 2 9.5 2S12 3.119 12 4.5V7h3.5c1.38 0 2.5 1.12 2.5 2.5 0 .276-.053.55-.158.805L15.17 17c-.21.507-.697.83-1.232.83H4c-1.105 0-2-.895-2-2V9.5z" [attr.fill]="usuarioReacciono(publicacion) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+                Me gusta
+              </button>
+
+              <button
+                mat-button
+                (click)="toggleComments(publicacion.idPublicacion!)">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M2 5c0-1.105.895-2 2-2h12c1.105 0 2 .895 2 2v8c0 1.105-.895 2-2 2H6l-4 4V5z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                </svg>
+                Comentar
+              </button>
+            </div>
+
+            <!-- Comments Section -->
+            <div *ngIf="showComments[publicacion.idPublicacion!]" class="comments-section">
+              <mat-divider></mat-divider>
+              <!-- Lista de Comentarios -->
+              <div *ngIf="publicacion.comentarios && publicacion.comentarios.length > 0" class="comments-list">
+                <div *ngFor="let comentario of publicacion.comentarios" class="comment">
+                  <img
+                    [src]="getAuthorAvatar(comentario.autor)"
+                    [alt]="getAuthorName(comentario.autor)"
+                    [title]="getAuthorName(comentario.autor)"
+                    class="avatar avatar-sm">
+                  <div class="comment-content">
+                    <div class="comment-bubble">
+                      <strong>{{ getAuthorName(comentario.autor) }}</strong>
+                      <p>{{ comentario.contenido }}</p>
+                    </div>
+                    <span class="comment-time">{{ getTimeAgo(comentario.fechaComentario) }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Agregar Comentario -->
+              <div class="add-comment">
+                <img
+                  [src]="getAuthorAvatar(currentUser!)"
+                  [alt]="getAuthorName(currentUser!)"
+                  [title]="getAuthorName(currentUser!)"
+                  class="avatar avatar-sm">
+                <mat-form-field appearance="outline" class="comment-input-field">
+                  <input
+                    matInput
+                    [(ngModel)]="newComments[publicacion.idPublicacion!]"
+                    placeholder="Escribe un comentario..."
+                    (keyup.enter)="agregarComentario(publicacion.idPublicacion!)">
+                </mat-form-field>
+                <button
+                  mat-raised-button
+                  color="primary"
+                  (click)="agregarComentario(publicacion.idPublicacion!)"
+                  [disabled]="!newComments[publicacion.idPublicacion!]?.trim()">
+                  Enviar
+                </button>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Empty State -->
+        <mat-card *ngIf="feed.length === 0" class="empty-state">
+          <mat-card-content>
+            <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+              <circle cx="60" cy="60" r="50" fill="#E5E7EB"/>
+              <rect x="30" y="40" width="60" height="4" rx="2" fill="#9CA3AF"/>
+              <rect x="30" y="50" width="45" height="4" rx="2" fill="#9CA3AF"/>
+              <rect x="30" y="60" width="55" height="4" rx="2" fill="#9CA3AF"/>
+            </svg>
+            <h3>No hay publicaciones aún</h3>
+            <p>Sé el primero en compartir algo</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </main>
+</div>

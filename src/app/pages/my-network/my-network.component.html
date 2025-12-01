@@ -1,0 +1,257 @@
+<div class="page-layout">
+  <app-header></app-header>
+  <app-sidebar></app-sidebar>
+
+  <!-- Notification -->
+  <div class="notification-success" *ngIf="showNotification">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" fill="#10B981"/>
+      <path d="M8 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <span>{{ notificationMessage }}</span>
+  </div>
+
+  <main class="page-main">
+    <div class="page-container">
+      <!-- Page Header -->
+      <mat-card class="page-header">
+        <mat-card-content>
+          <h1 class="page-title">Mi Red</h1>
+          <p class="page-subtitle">Gestiona tus conexiones profesionales</p>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Tabs -->
+      <mat-card class="tabs-card">
+        <mat-card-content>
+          <mat-tab-group 
+            (selectedTabChange)="setActiveTab($event.index === 0 ? 'contactos' : $event.index === 1 ? 'recibidas' : $event.index === 2 ? 'enviadas' : 'sugerencias')"
+            [selectedIndex]="activeTab === 'contactos' ? 0 : activeTab === 'recibidas' ? 1 : activeTab === 'enviadas' ? 2 : 3"
+            animationDuration="300ms">
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="margin-right: 8px;">
+                  <path d="M7 10h6M4 6h12M4 14h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Contactos ({{ contactos.length }})
+              </ng-template>
+            </mat-tab>
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="margin-right: 8px;">
+                  <path d="M10 18l-6-6h4V2h4v10h4l-6 6z" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Recibidas ({{ solicitudesRecibidas.length }})
+              </ng-template>
+            </mat-tab>
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="margin-right: 8px;">
+                  <path d="M10 2l6 6h-4v10H8V8H4l6-6z" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Enviadas ({{ solicitudesEnviadas.length }})
+              </ng-template>
+            </mat-tab>
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="margin-right: 8px;">
+                  <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2"/>
+                  <path d="M10 6v4l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Sugerencias ({{ sugerencias.length }})
+              </ng-template>
+            </mat-tab>
+          </mat-tab-group>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Loading -->
+      <mat-card *ngIf="loading">
+        <mat-card-content class="loading-state">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Cargando...</p>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Tab Content: Contactos -->
+      <div class="tab-content" *ngIf="activeTab === 'contactos' && !loading">
+        <div class="users-grid">
+          <mat-card class="user-card" *ngFor="let contacto of contactos">
+            <mat-card-content>
+              <div class="user-avatar">
+                <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                  <circle cx="40" cy="40" r="40" fill="#E5E7EB"/>
+                  <circle cx="40" cy="30" r="16" fill="#9CA3AF"/>
+                  <path d="M8 72c0-17.6 14.4-32 32-32s32 14.4 32 32" fill="#9CA3AF"/>
+                </svg>
+              </div>
+              <h3 class="user-name">{{ contacto.primerNombre }} {{ contacto.primerApellido }}</h3>
+              <p class="user-location">{{ contacto.ciudad }}, {{ contacto.pais }}</p>
+              <p class="user-description" *ngIf="contacto.descripcion">{{ contacto.descripcion }}</p>
+              <mat-divider></mat-divider>
+              <div class="user-actions">
+                <button mat-stroked-button color="primary" (click)="verPerfil(contacto.idUsuario!)">
+                  Ver Perfil
+                </button>
+                <button mat-stroked-button color="primary">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="margin-right: 4px;">
+                    <path d="M18 2H2v12h4v4l4-4h8V2z" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  Mensaje
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <mat-card class="empty-state" *ngIf="contactos.length === 0">
+          <mat-card-content>
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+              <circle cx="32" cy="32" r="30" stroke="#E5E7EB" stroke-width="2"/>
+              <circle cx="32" cy="24" r="8" stroke="#9CA3AF" stroke-width="2"/>
+              <path d="M12 52c0-11 9-20 20-20s20 9 20 20" stroke="#9CA3AF" stroke-width="2"/>
+            </svg>
+            <p>Aún no tienes contactos</p>
+            <button mat-raised-button color="primary" (click)="setActiveTab('sugerencias')">
+              Ver Sugerencias
+            </button>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Tab Content: Recibidas -->
+      <div class="tab-content" *ngIf="activeTab === 'recibidas' && !loading">
+        <div class="requests-list">
+          <mat-card class="request-card" *ngFor="let solicitud of solicitudesRecibidas">
+            <mat-card-content>
+              <div class="request-header">
+                <div class="user-avatar-small">
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                    <circle cx="24" cy="24" r="24" fill="#E5E7EB"/>
+                    <circle cx="24" cy="18" r="8" fill="#9CA3AF"/>
+                    <path d="M8 40c0-8.8 7.2-16 16-16s16 7.2 16 16" fill="#9CA3AF"/>
+                  </svg>
+                </div>
+                <div class="request-info">
+                  <h3 class="request-name">
+                    {{ solicitud.solicitante.primerNombre }} {{ solicitud.solicitante.primerApellido }}
+                  </h3>
+                  <p class="request-location">
+                    {{ solicitud.solicitante.ciudad }}, {{ solicitud.solicitante.pais }}
+                  </p>
+                  <p class="request-date">Solicitud enviada el {{ formatDate(solicitud.fechaSolicitud) }}</p>
+                </div>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="request-actions">
+                <button mat-raised-button color="primary" (click)="aceptarSolicitud(solicitud.idConexion!)">
+                  Aceptar
+                </button>
+                <button mat-stroked-button color="warn" (click)="rechazarSolicitud(solicitud.idConexion!)">
+                  Rechazar
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <mat-card class="empty-state" *ngIf="solicitudesRecibidas.length === 0">
+          <mat-card-content>
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+              <rect x="8" y="12" width="48" height="40" rx="4" stroke="#E5E7EB" stroke-width="2"/>
+              <path d="M8 20h48M20 12v8M44 12v8" stroke="#9CA3AF" stroke-width="2"/>
+            </svg>
+            <p>No tienes solicitudes pendientes</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Tab Content: Enviadas -->
+      <div class="tab-content" *ngIf="activeTab === 'enviadas' && !loading">
+        <div class="requests-list">
+          <mat-card class="request-card" *ngFor="let solicitud of solicitudesEnviadas">
+            <mat-card-content>
+              <div class="request-header">
+                <div class="user-avatar-small">
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                    <circle cx="24" cy="24" r="24" fill="#E5E7EB"/>
+                    <circle cx="24" cy="18" r="8" fill="#9CA3AF"/>
+                    <path d="M8 40c0-8.8 7.2-16 16-16s16 7.2 16 16" fill="#9CA3AF"/>
+                  </svg>
+                </div>
+                <div class="request-info">
+                  <h3 class="request-name">
+                    {{ solicitud.receptor.primerNombre }} {{ solicitud.receptor.primerApellido }}
+                  </h3>
+                  <p class="request-location">
+                    {{ solicitud.receptor.ciudad }}, {{ solicitud.receptor.pais }}
+                  </p>
+                  <p class="request-date">Solicitud enviada el {{ formatDate(solicitud.fechaSolicitud) }}</p>
+                </div>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="request-actions">
+                <mat-chip-listbox>
+                  <mat-chip color="accent" selected>Pendiente</mat-chip>
+                </mat-chip-listbox>
+                <button mat-stroked-button color="warn" (click)="cancelarSolicitud(solicitud.idConexion!)">
+                  Cancelar
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <mat-card class="empty-state" *ngIf="solicitudesEnviadas.length === 0">
+          <mat-card-content>
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+              <path d="M8 32h48M40 16l16 16-16 16" stroke="#E5E7EB" stroke-width="2"/>
+            </svg>
+            <p>No has enviado solicitudes</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Tab Content: Sugerencias -->
+      <div class="tab-content" *ngIf="activeTab === 'sugerencias' && !loading">
+        <div class="users-grid">
+          <mat-card class="user-card" *ngFor="let usuario of sugerencias">
+            <mat-card-content>
+              <div class="user-avatar">
+                <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                  <circle cx="40" cy="40" r="40" fill="#E5E7EB"/>
+                  <circle cx="40" cy="30" r="16" fill="#9CA3AF"/>
+                  <path d="M8 72c0-17.6 14.4-32 32-32s32 14.4 32 32" fill="#9CA3AF"/>
+                </svg>
+              </div>
+              <h3 class="user-name">{{ usuario.primerNombre }} {{ usuario.primerApellido }}</h3>
+              <p class="user-location">{{ usuario.ciudad }}, {{ usuario.pais }}</p>
+              <p class="user-description" *ngIf="usuario.descripcion">{{ usuario.descripcion }}</p>
+              <mat-divider></mat-divider>
+              <div class="user-actions">
+                <button mat-raised-button color="primary" (click)="enviarSolicitud(usuario.idUsuario!)">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="margin-right: 4px;">
+                    <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2"/>
+                    <path d="M10 6v8M6 10h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                  Conectar
+                </button>
+                <button mat-stroked-button color="primary">Ver Perfil</button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <mat-card class="empty-state" *ngIf="sugerencias.length === 0">
+          <mat-card-content>
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+              <circle cx="32" cy="32" r="30" stroke="#E5E7EB" stroke-width="2"/>
+              <path d="M32 20v24M20 32h24" stroke="#9CA3AF" stroke-width="2"/>
+            </svg>
+            <p>No hay sugerencias disponibles en este momento</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </main>
+</div>

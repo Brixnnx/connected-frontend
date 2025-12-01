@@ -1,0 +1,123 @@
+<div class="page-layout">
+  <app-header></app-header>
+  <app-sidebar></app-sidebar>
+
+  <main class="page-main">
+    <div class="messages-page">
+      <div class="messages-layout">
+        <!-- Sidebar de contactos -->
+        <mat-card class="contacts-sidebar">
+          <mat-card-header>
+            <mat-card-title>Mensajes</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="contacts-list">
+              <div
+                *ngFor="let contacto of contactos"
+                class="contact-item"
+                [class.active]="selectedContact?.idUsuario === contacto.idUsuario"
+                (click)="selectContact(contacto)">
+                <div class="contact-avatar">
+                  <img
+                    [src]="getContactAvatar(contacto)"
+                    [alt]="getContactName(contacto)"
+                    [title]="getContactName(contacto)">
+                </div>
+                <div class="contact-info">
+                  <h4>{{ getContactName(contacto) }}</h4>
+                  <p class="contact-location">{{ contacto.ciudad }}, {{ contacto.pais }}</p>
+                </div>
+              </div>
+
+              <div *ngIf="contactos.length === 0" class="empty-state">
+                <p>No tienes contactos aún.</p>
+                <p class="text-muted">Conecta con personas desde Mi Red</p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Área de conversación -->
+        <mat-card class="conversation-area">
+          <!-- Header del chat -->
+          <mat-card-header class="chat-header" *ngIf="selectedContact">
+            <div class="contact-avatar">
+              <img
+                [src]="getContactAvatar(selectedContact)"
+                [alt]="getContactName(selectedContact)"
+                [title]="getContactName(selectedContact)">
+            </div>
+            <div class="contact-info">
+              <mat-card-title>{{ getContactName(selectedContact) }}</mat-card-title>
+              <mat-card-subtitle>{{ selectedContact.descripcion || 'Usuario de ConnectEd' }}</mat-card-subtitle>
+            </div>
+          </mat-card-header>
+
+          <mat-card-content>
+            <!-- Mensajes -->
+            <div class="messages-container" *ngIf="selectedContact">
+              <div *ngIf="isLoading" class="loading-state">
+                <mat-spinner diameter="30"></mat-spinner>
+                <p>Cargando mensajes...</p>
+              </div>
+
+              <div
+                *ngFor="let mensaje of messages"
+                class="message"
+                [class.message-sent]="isMessageFromCurrentUser(mensaje)"
+                [class.message-received]="!isMessageFromCurrentUser(mensaje)">
+                <div class="message-bubble">
+                  <p>{{ mensaje.contenido }}</p>
+                  <span class="message-time">
+                    {{ mensaje.fechaEnvio | date:'dd/MM/yyyy HH:mm' }}
+                  </span>
+                </div>
+              </div>
+
+              <div *ngIf="!isLoading && messages.length === 0" class="empty-conversation">
+                <p>No hay mensajes aún.</p>
+                <p class="text-muted">Envía un mensaje para iniciar la conversación</p>
+              </div>
+            </div>
+
+            <!-- Input de mensaje -->
+            <div class="message-input-container" *ngIf="selectedContact">
+              <form class="message-form" (ngSubmit)="sendMessage()">
+                <mat-form-field appearance="outline" class="message-input-field">
+                  <mat-label>Escribe un mensaje...</mat-label>
+                  <textarea
+                    matInput
+                    [(ngModel)]="newMessage"
+                    name="newMessage"
+                    rows="2"
+                    (keydown)="handleKeyPress($event)"
+                    [disabled]="isLoading"></textarea>
+                </mat-form-field>
+                <button
+                  mat-raised-button
+                  color="primary"
+                  type="submit"
+                  [disabled]="!newMessage.trim() || isLoading">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M2 10l16-8-8 16-2-8-6-0z" fill="currentColor"/>
+                  </svg>
+                  Enviar
+                </button>
+              </form>
+            </div>
+
+            <!-- Estado vacío -->
+            <div class="empty-conversation-state" *ngIf="!selectedContact">
+              <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                <circle cx="60" cy="60" r="50" fill="#E5E7EB"/>
+                <path d="M40 50h40M40 70h30" stroke="#9CA3AF" stroke-width="4" stroke-linecap="round"/>
+              </svg>
+              <h3>Selecciona una conversación</h3>
+              <p>Elige un contacto para empezar a chatear</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </main>
+</div>

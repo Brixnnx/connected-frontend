@@ -1,0 +1,164 @@
+<div class="page-layout">
+  <app-header></app-header>
+  <app-sidebar></app-sidebar>
+
+  <!-- Success Notification -->
+  <div class="notification-success" *ngIf="showSuccessMessage">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" fill="#10B981"/>
+      <path d="M8 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <span>¡Registro exitoso! Ahora eres mentor en ConnectED</span>
+  </div>
+
+  <main class="page-main">
+    <div class="page-container">
+      <!-- Page Header -->
+      <div class="page-header card">
+        <h1 class="page-title">Registrarse como Mentor</h1>
+        <p class="page-subtitle">Comparte tu experiencia y ayuda a otros profesionales a crecer</p>
+      </div>
+
+      <!-- Form Card -->
+      <div class="form-card card">
+        <form [formGroup]="mentorForm" (ngSubmit)="onSubmit()">
+          <!-- Áreas de Experiencia -->
+          <div class="form-group">
+            <label for="areasExperiencia" class="form-label">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M10 2L3 7v6c0 4.4 3 8.5 7 10 4-1.5 7-5.6 7-10V7l-7-5z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Áreas de Experiencia *
+            </label>
+            <textarea
+              id="areasExperiencia"
+              formControlName="areasExperiencia"
+              class="form-control"
+              rows="4"
+              placeholder="Describe tus áreas de especialización y experiencia (ej: Desarrollo Web, Inteligencia Artificial, Marketing Digital, etc.)"
+            ></textarea>
+            <span class="error-message" *ngIf="getErrorMessage('areasExperiencia')">
+              {{ getErrorMessage('areasExperiencia') }}
+            </span>
+          </div>
+
+          <!-- Años de Experiencia -->
+          <div class="form-group">
+            <label for="anosExperiencia" class="form-label">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M10 6v4l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              Años de Experiencia *
+            </label>
+            <input
+              type="number"
+              id="anosExperiencia"
+              formControlName="anosExperiencia"
+              class="form-control"
+              min="1"
+              max="50"
+              placeholder="Ingresa tus años de experiencia"
+            />
+            <span class="error-message" *ngIf="getErrorMessage('anosExperiencia')">
+              {{ getErrorMessage('anosExperiencia') }}
+            </span>
+          </div>
+
+          <!-- Tarifa por Hora -->
+          <div class="form-group">
+            <label for="tarifaHora" class="form-label">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M10 5v5l3 3" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Tarifa por Hora (USD) *
+            </label>
+            <input
+              type="number"
+              id="tarifaHora"
+              formControlName="tarifaHora"
+              class="form-control"
+              min="0"
+              step="0.01"
+              placeholder="Ingresa tu tarifa por hora (puede ser 0 si es gratuito)"
+            />
+            <span class="error-message" *ngIf="getErrorMessage('tarifaHora')">
+              {{ getErrorMessage('tarifaHora') }}
+            </span>
+          </div>
+
+          <!-- Disponibilidad -->
+          <div class="form-group checkbox-group">
+            <label class="checkbox-label">
+              <input
+                type="checkbox"
+                formControlName="disponible"
+                class="form-checkbox"
+              />
+              <span>Estoy disponible para sesiones de mentoría</span>
+            </label>
+          </div>
+
+          <!-- Error Message -->
+          <div class="alert alert-error" *ngIf="errorMessage">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2"/>
+              <path d="M10 6v4M10 14h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            {{ errorMessage }}
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" class="btn btn-outline" (click)="cancelar()" [disabled]="isSubmitting">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="isSubmitting">
+              <span *ngIf="!isSubmitting">Registrarse como Mentor</span>
+              <span *ngIf="isSubmitting">
+                <div class="loading-spinner-small"></div>
+                Registrando...
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Info Card -->
+      <div class="info-card card">
+        <h3>Beneficios de ser Mentor</h3>
+        <ul>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="8" fill="#10B981"/>
+              <path d="M6 10l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Comparte tu conocimiento y experiencia con la comunidad
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="8" fill="#10B981"/>
+              <path d="M6 10l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Construye tu reputación profesional
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="8" fill="#10B981"/>
+              <path d="M6 10l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Genera ingresos adicionales por tus sesiones
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="8" fill="#10B981"/>
+              <path d="M6 10l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Amplía tu red de contactos profesionales
+          </li>
+        </ul>
+      </div>
+    </div>
+  </main>
+</div>

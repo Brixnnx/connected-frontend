@@ -1,0 +1,89 @@
+<div class="page-layout">
+  <app-header></app-header>
+  <app-sidebar></app-sidebar>
+
+  <main class="page-main">
+    <div class="settings-container">
+      <h1>Configuración</h1>
+
+      <!-- Success Message -->
+      <div *ngIf="successMessage" class="alert alert-success">
+        {{ successMessage }}
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="alert alert-error">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Settings Form -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Información Personal</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form (ngSubmit)="guardarCambios()">
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Nombre</mat-label>
+                <input matInput [(ngModel)]="formData.primerNombre" name="primerNombre" placeholder="Tu nombre">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Apellido</mat-label>
+                <input matInput [(ngModel)]="formData.primerApellido" name="primerApellido" placeholder="Tu apellido">
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Correo Electrónico</mat-label>
+              <input matInput [(ngModel)]="formData.email" name="email" placeholder="tu@email.com" disabled>
+              <mat-hint>El correo electrónico no puede ser modificado</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Descripción</mat-label>
+              <textarea matInput [(ngModel)]="formData.descripcion" name="descripcion" rows="4" placeholder="Cuéntanos sobre ti..."></textarea>
+            </mat-form-field>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Ciudad</mat-label>
+                <input matInput [(ngModel)]="formData.ciudad" name="ciudad" placeholder="Tu ciudad">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>País</mat-label>
+                <input matInput [(ngModel)]="formData.pais" name="pais" placeholder="Tu país">
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>URL de Foto de Perfil</mat-label>
+              <input matInput [(ngModel)]="formData.fotoPerfil" name="fotoPerfil" placeholder="https://ejemplo.com/foto.jpg">
+            </mat-form-field>
+
+            <div class="form-actions">
+              <button mat-raised-button color="primary" type="submit" [disabled]="isLoading">
+                {{ isLoading ? 'Guardando...' : 'Guardar Cambios' }}
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Danger Zone -->
+      <mat-card class="danger-zone">
+        <mat-card-header>
+          <mat-card-title>Zona de Peligro</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>Una vez que cierres sesión, deberás volver a iniciar sesión para acceder a tu cuenta.</p>
+          <button mat-raised-button color="warn" (click)="cerrarSesion()">
+            Cerrar Sesión
+          </button>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </main>
+</div>
